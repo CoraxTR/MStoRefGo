@@ -22,7 +22,7 @@ func NewMoySkladProcessor(r *Ratelimiter, c *config.Moyskladapiconfig) *MoySklad
 	return &MoySkladProcessor{Ratelimiter: r, Config: c}
 }
 
-func (m *MoySkladProcessor) GetDeliverableOrders() {
+func (m *MoySkladProcessor) GetDeliverableOrders() []byte {
 	now := time.Now()
 	tomorrow := now.AddDate(0, 0, 1)
 	dayaftertomorrow := tomorrow.AddDate(0, 0, 1)
@@ -73,8 +73,13 @@ func (m *MoySkladProcessor) GetDeliverableOrders() {
 	if err != nil {
 		panic(err)
 	}
+	defer resp.Body.Close()
+
+	size := len(body)
 
 	fmt.Printf("Status: %s\n", resp.Status)
 	fmt.Printf("Body: %s\n", body)
+	fmt.Printf("Size: %d\n", size)
 
+	return body
 }
